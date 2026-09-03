@@ -1,122 +1,67 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+import { useNavegacion } from "./context/navegacionContext.jsx";
+import { useCasoContext } from "./context/casoContext.jsx";
+import { navItems } from "./data/navItems.js";
+import { Navegacion } from "./components/Navegacion.jsx";
+import { FichaCaso } from "./components/FichaCaso.jsx";
+import { Involucrados } from "./components/Involucrados.jsx";
+import { ProblemaArbol } from "./components/ProblemaArbol.jsx";
+import { AnalisisObjetivos } from "./components/AnalisisObjetivos.jsx";
+import { PantallaConstruccion } from "./components/PantallaConstruccion.jsx";
+import { ExportarImportarJSON } from "./components/ExportarImportarJSON.jsx";
+
+/* Pantallas 4 a 10: módulos en construcción, igual que en el artefacto original */
+const PANTALLAS_EN_CONSTRUCCION = [4, 5, 6, 7, 8, 9, 10];
 
 function App() {
-  const [count, setCount] = useState(0)
+  const { pantallaActiva } = useNavegacion();
+  const { caso } = useCasoContext();
+
+  const item = navItems.find(x => x.id === pantallaActiva);
+  const tituloProyecto = caso.caso.titulo.trim() || "Proyecto sin título";
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
+    <div className="app">
+      <aside className="sidebar">
+        <div className="brand">
+          <div className="brand-mark">MML</div>
+          <h1>Formulación de Proyectos</h1>
+          <p>Artefacto educativo basado en la Metodología de Marco Lógico CEPAL/ILPES.</p>
         </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
+        <Navegacion />
+      </aside>
+
+      <main className="main">
+        <header className="topbar">
+          <div className="project-title">
+            <div className="eyebrow">Proyecto</div>
+            <strong>{tituloProyecto}</strong>
+          </div>
+
+          <ExportarImportarJSON />
+
+          <div className="step-badge">
+            <span>{item?.step || "Punto de partida"}</span>
+            <strong>{item?.label}</strong>
+          </div>
+        </header>
+
+        <div className="content">
+          {pantallaActiva === 0 && <FichaCaso />}
+          {pantallaActiva === 1 && <Involucrados />}
+          {pantallaActiva === 2 && <ProblemaArbol />}
+          {pantallaActiva === 3 && <AnalisisObjetivos />}
+          {PANTALLAS_EN_CONSTRUCCION.includes(pantallaActiva) && (
+            <PantallaConstruccion id={pantallaActiva} />
+          )}
+
+          <p className="footer-note">
+            Artefacto educativo en construcción. Estructura basada en la secuencia de diez pasos de la
+            Metodología de Marco Lógico de CEPAL/ILPES y en los documentos de formulación del curso.
           </p>
         </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+      </main>
+    </div>
+  );
 }
 
-export default App
+export default App;
